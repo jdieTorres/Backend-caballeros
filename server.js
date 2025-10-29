@@ -52,7 +52,7 @@ const swaggerOptions = {
 };
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
-app.use("/", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Endpoints
 
@@ -106,7 +106,7 @@ app.get("/caballeros/:nombre", async (req, res) => {
   try {
     const nombreBuscado = req.params.nombre;
     const caballero = await Caballero.findOne({
-      nombre: new RegExp(`^${nombreBuscado}$`, "i"), // insensible a mayúsculas
+      nombre: new RegExp(`^${nombreBuscado}$`, "i"),
     });
 
     if (!caballero) {
