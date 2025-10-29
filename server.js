@@ -84,7 +84,7 @@ app.get("/caballeros", async (req, res) => {
 
 /**
  * @openapi
- * /caballeros/nombre/{nombre}:
+ * /caballeros/{nombre}:
  *   get:
  *     summary: Obtiene un caballero por su nombre
  *     tags:
@@ -95,14 +95,10 @@ app.get("/caballeros", async (req, res) => {
  *         schema:
  *           type: string
  *         required: true
- *         description: Nombre del caballero (no sensible a mayúsculas)
+ *         description: Nombre del caballero
  *     responses:
  *       200:
  *         description: Caballero encontrado.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Caballero'
  *       404:
  *         description: Caballero no encontrado.
  */
@@ -123,39 +119,7 @@ app.get("/caballeros/:nombre", async (req, res) => {
   }
 });
 
-// Esquema de datos para Swagger
-
-/**
- * @openapi
- * components:
- *   schemas:
- *     Caballero:
- *       type: object
- *       properties:
- *         nombre:
- *           type: string
- *           example: Seiya
- *         constelacion:
- *           type: string
- *           example: Pegaso
- *         nivel:
- *           type: string
- *           example: Bronce
- *         ataquePrincipal:
- *           type: string
- *           example: Meteoros de Pegaso
- *         edad:
- *           type: integer
- *           example: 13
- *         pais:
- *           type: string
- *           example: Japón
- *         imagen:
- *           type: string
- *           example: https://example.com/seiya.jpg
- */
-
 const PORT = 3000;
 app.listen(PORT, () => {
-  console.log(`⚡ Servidor ejecutándose en http://localhost:${PORT}`);
+  console.log(`Servidor ejecutándose en https://backend-caballeros.onrender.com`);
 });
