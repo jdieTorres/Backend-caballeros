@@ -7,11 +7,7 @@ app.use(express.json());
 app.use(cors());
 
 // Conexión a MongoAtlas
-mongoose
-  .connect("mongodb+srv://admin:JpassD2810*@cluster0.3huu0up.mongodb.net/caballerosZodiaco", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("Conectado a MongoDB"))
   .catch((err) => console.error("Error al conectar a MongoDB:", err));
 
@@ -60,3 +56,4 @@ const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`⚡ Servidor ejecutándose en http://localhost:${PORT}`);
 });
+
