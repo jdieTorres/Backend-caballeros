@@ -1,13 +1,19 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
+import swaggerUi from "swagger-ui-express";
+import swaggerJsdoc from "swagger-jsdoc";
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
 // Conexión a MongoAtlas
-mongoose.connect(process.env.MONGO_URI)
+mongoose
+  .connect("mongodb+srv://admin:JpassD2810*@cluster0.3huu0up.mongodb.net/caballerosZodiaco", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => console.log("Conectado a MongoDB"))
   .catch((err) => console.error("Error al conectar a MongoDB:", err));
 
@@ -24,8 +30,49 @@ const caballeroSchema = new mongoose.Schema({
 // Modelo
 const Caballero = mongoose.model("Caballero", caballeroSchema, "caballeros");
 
-// Rutas del microservicio
+// Swagger Configuración
 
+const swaggerOptions = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "ZodiacoAPI",
+      version: "1.0.0",
+      description:
+        "API REST que permite consultar información de los Caballeros del Zodiaco.",
+    },
+    servers: [
+      {
+        url: "https://backend-caballeros.onrender.com",
+        description: "Servidor en la nube",
+      }
+    ],
+  },
+  apis: ["./server.js"],
+};
+
+const swaggerDocs = swaggerJsdoc(swaggerOptions);
+app.use("/", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+// Endpoints
+
+/**
+ * @openapi
+ * /caballeros:
+ *   get:
+ *     summary: Obtiene todos los caballeros
+ *     tags:
+ *       - Caballeros
+ *     responses:
+ *       200:
+ *         description: Lista de caballeros recuperada correctamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Caballero'
+ */
 app.get("/caballeros", async (req, res) => {
   try {
     const data = await Caballero.find();
@@ -35,6 +82,30 @@ app.get("/caballeros", async (req, res) => {
   }
 });
 
+/**
+ * @openapi
+ * /caballeros/nombre/{nombre}:
+ *   get:
+ *     summary: Obtiene un caballero por su nombre
+ *     tags:
+ *       - Caballeros
+ *     parameters:
+ *       - in: path
+ *         name: nombre
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Nombre del caballero (no sensible a mayúsculas)
+ *     responses:
+ *       200:
+ *         description: Caballero encontrado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Caballero'
+ *       404:
+ *         description: Caballero no encontrado.
+ */
 app.get("/caballeros/:nombre", async (req, res) => {
   try {
     const nombreBuscado = req.params.nombre;
@@ -52,8 +123,39 @@ app.get("/caballeros/:nombre", async (req, res) => {
   }
 });
 
+// Esquema de datos para Swagger
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Caballero:
+ *       type: object
+ *       properties:
+ *         nombre:
+ *           type: string
+ *           example: Seiya
+ *         constelacion:
+ *           type: string
+ *           example: Pegaso
+ *         nivel:
+ *           type: string
+ *           example: Bronce
+ *         ataquePrincipal:
+ *           type: string
+ *           example: Meteoros de Pegaso
+ *         edad:
+ *           type: integer
+ *           example: 13
+ *         pais:
+ *           type: string
+ *           example: Japón
+ *         imagen:
+ *           type: string
+ *           example: https://example.com/seiya.jpg
+ */
+
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`⚡ Servidor ejecutándose en http://localhost:${PORT}`);
 });
-
